@@ -66,10 +66,31 @@ class SnacksController < ApplicationController
 			],
 			"user_ratings_total": 5,
 			map_url: "https://maps.google.com/?cid=11866674382407143631", 
-			website: "https://fujisandararara.wixsite.com/junko-uenoten"
-			photo_reference: "Aap_uEDuA8UvMaS4-GIIvySdYAvxF4L1cI5cBBQmn9L6JquGs3EuEkDj8yU3NGSL9N8Zy1wQsKpHeDCrrruRMdOKjB5eBkmbIwCrUtTDVSLyWVWGBwMhY-2jZyo1eKVKqPVYFo3nX_f6zzi5_wK39CZF9MJ8BU5c6NPl0EJrUs35kaS-Sjgy"
+			website: "https://fujisandararara.wixsite.com/junko-uenoten",
+			photo_reference: "Aap_uEDuA8UvMaS4-GIIvySdYAvxF4L1cI5cBBQmn9L6JquGs3EuEkDj8yU3NGSL9N8Zy1wQsKpHeDCrrruRMdOKjB5eBkmbIwCrUtTDVSLyWVWGBwMhY-2jZyo1eKVKqPVYFo3nX_f6zzi5_wK39CZF9MJ8BU5c6NPl0EJrUs35kaS-Sjgy",
 		}
 
 		render json: snack, status: :ok
+	end
+
+	def s3_direct_post
+		resource = S3_BUCKET.presigned_post(key: "<アップロードするディレクトリのpath>/#{SecureRandom.uuid}/${filename}", success_action_status: '201', acl: 'public-read', content_length_range: 1..(10.megabytes))
+		render json: { url: resource.url, fields: resource.fields }
+	end
+
+	def open_url
+		require 'open-uri'
+		# url = "https://www.snakaranavi.net/shop.php?sno=7545"
+		url = "https://www.snakaranavi.net/list.php?type=area&pno=13&pref=%E6%9D%B1%E4%BA%AC%E9%83%BD&aid=1317&area=%E4%B8%8A%E9%87%8E%E3%83%BB%E6%B5%85%E8%8D%89%E3%83%BB%E6%97%A5%E6%9A%AE%E9%87%8C"
+		charset = nil
+		html = OpenURI.open_uri(url) do |f|
+						charset = f.charset
+						f.read
+					end
+		doc = Nokogiri::HTML.parse(html, nil, charset)
+		doc.xpath('//li[@class="shop_box"]')
+	end
+
+	def parse_html
 	end
 end
