@@ -3,4 +3,6 @@ Rails.application.routes.draw do
   root 'welcome#index'
   # get "/snacks/:id", "Snacks#index"
   get '/snacks/:id', to: 'snacks#show'
+  get '/snacks/s3_direct_post', to: 'snacks#s3_direct_post'
+  get '/admin/s3_direct_post', to: 'admin#s3_direct_post'
 end
